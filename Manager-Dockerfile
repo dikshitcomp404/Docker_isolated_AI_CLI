@@ -1,0 +1,16 @@
+
+FROM alpine:3.23
+
+RUN mkdir -p /host-dest/ /tool-src/
+
+RUN apk add --no-cache unison su-exec sed
+
+RUN adduser -D -u 1000 devuser
+
+COPY entrypoint.sh /home/entrypoint.sh
+RUN sed -i 's/\r$//' /home/entrypoint.sh && \
+    chmod +x /home/entrypoint.sh
+
+RUN mkdir -p /home/devuser/.unison && chown -R devuser:devuser /home/devuser/.unison
+
+ENTRYPOINT ["/bin/sh", "/home/entrypoint.sh"]

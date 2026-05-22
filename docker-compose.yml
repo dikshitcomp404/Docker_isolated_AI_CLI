@@ -1,0 +1,53 @@
+services:
+  # The Low-Level Dev Tool
+  tool-container:
+    image: naoyoshinori/gemini-cli:0-node
+    # image: alpine:3.23
+    user: "1000:1000" # Run as non-root
+    stdin_open: true
+    tty: true
+    environment:
+      - TERM=xterm-256color
+      - COLORTERM=truecolor
+    networks:
+      - isolated-link
+      - internet-net
+    command: > 
+      sleep infinity
+    working_dir: /work
+    volumes:
+      - tool-work-area:/work
+      # This container has NO access to the host filesystem
+
+  # The Middle Manager (The Air-Lock)
+  manager-bridge:
+    image: local-manager:latest
+    build:
+      context: .
+      dockerfile: Managr-Dockerfile
+    command: > 
+      unison /tool-src /host-dest 
+      -repeat 5 
+      -batch 
+      -prefer newer 
+      -copyonconflict 
+      -silent
+    volumes:
+      # Access to the Tool's workspace
+      - tool-work-area:/tool-src:rw
+      # Access ONLY to the specific host exchange folder
+      - ./host_in:/host-dest:rw
+      # Persistent state database for performance
+      - unison_state:/home/devuser/.unison
+    depends_on:
+      - tool-container
+
+volumes:
+  tool-work-area: # Managed by Docker, not visible to Host directly
+  unison_state:  # Stores the sync database
+
+networks:
+  isolated-link:
+    internal: true # No internet access for the tool if desired
+  internet-net:
+    driver: bridge
