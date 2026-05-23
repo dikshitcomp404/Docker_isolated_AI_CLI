@@ -4,7 +4,7 @@ An isolated, security-first environment designed explicitly to execute AI workfl
 
 ---
 
-## 👁️ Project Vision
+## Project Vision
 
 The long-term goal of this project is to create a **completely portable and secure AI execution runtime**. 
 
@@ -15,7 +15,7 @@ Most modern AI coding platforms and agent frameworks prioritize ease-of-use, whi
 
 ---
 
-## 🏗️ Current Architecture & Working
+## Current Architecture & Working
 
 The system currently implements a **Three-Tier Airlock Separation** using Docker containers, an unprivileged privilege-dropping engine (`su-exec`), and an active file synchronization layer (`Unison`).
 
@@ -49,7 +49,7 @@ v
 
 ---
 
-## ⚡ Current Getting Started
+## Current Getting Started
 
 ### Prerequisites
 * Docker is installed. (As of this update, this sytem is only tested in a Windows 11 enviroment with Docker Desktop installed (WSL2 backend) so this is recommended. This will most likely work on linux enviroment as well but hasnt been officially tested.)
@@ -99,7 +99,7 @@ docker exec manager-bridge ps aux
 
 ---
 
-## 🚀 Future Roadmap
+## Future Roadmap
 
 The architecture has been designed from day one to scale into an advanced, network-driven AI sandbox. Future development will be rolled out across two distinct phases:
 
