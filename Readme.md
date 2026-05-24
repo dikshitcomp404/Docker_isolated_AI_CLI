@@ -74,7 +74,7 @@ docker compose up -d
 To jump inside your secure AI development workspace:
 
 ```
-docker exec -it ai-container /bin/bash
+docker exec -it ai-container gemini
 ```
 
 ### Verifying Isolation
