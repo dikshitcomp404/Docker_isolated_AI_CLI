@@ -19,21 +19,17 @@ Most modern AI coding platforms and agent frameworks prioritize ease-of-use, whi
 
 The system currently implements a **Three-Tier Airlock Separation** using Docker containers, an unprivileged privilege-dropping engine (`su-exec`), and an active file synchronization layer (`Unison`).
 
-
 [WINDOWS 11 HOST]
-Holds the workspace source code in a single folder: ./host_in 
-|
-[Isolated Host Mount]
-v
+
+- Will hold the workspace in a single folder: ./host_in 
+
 [MANAGER-BRIDGE CONTAINER]
 
 - Multi-stage Alpine image running as root for initial boot     
 - Uses an entrypoint script to dynamically chown mounts         
 - Uses su-exec to securely drop privileges to devuser (UID 1000)
 - Runs background Unison daemon to sync files in real-time      
-|
-[Docker-Internal Shared Volume]
-v
+
 [AI-CONTAINER ] 
 
 - Dedicated AI agent / runtime workspace (tty/stdin_open)     
@@ -61,7 +57,6 @@ Ensure your directory structure looks exactly like this:
 ├── Dockerfile          # Builder for the manager-bridge
 ├── entrypoint.sh       # Privilege-dropping and sync execution script
 └── host_in/            # Your actual project source folder on your host
-
 ```
 
 ### Initial Spin-up
@@ -70,7 +65,6 @@ To compile the local Manager image for the first time and mount the safe workspa
 
 ```
 docker compose up -d
-
 ```
 
 *Note: On all subsequent runs, Docker Compose will instantly reuse the cached local image without rebuilding it.*
@@ -81,7 +75,6 @@ To jump inside your secure AI development workspace:
 
 ```
 docker exec -it ai-container /bin/bash
-
 ```
 
 ### Verifying Isolation
@@ -94,23 +87,22 @@ docker exec ai-container id
 
 # Ensure Unison is running cleanly as PID 1 without lingering root processes
 docker exec manager-bridge ps aux
-
 ```
 
 ---
 
 ## Future Roadmap
 
-The architecture has been designed from day one to scale into an advanced, network-driven AI sandbox. Future development will be rolled out across two distinct phases:
+The architecture has been designed from day one to scale into an advanced, network-driven sandbox:
 
-### Phase 1: Microservice Package Management via Nix API
+### Microservice Package Management via Nix API
 
-* **The Objective:** Give the unprivileged `ai-container` the ability to instantly install any development library or AI tooling (Python, Node.js, Gemini CLI, etc.) required for its tasks without allowing privilege escalation or expanding the base Docker image footprint.
-* **The Design:** Implement an asynchronous **Service-Provider Pattern** over an internal network bridge. The Manager container will host a Nix package repository on a persistent volume. The AI container will query an internal, isolated API endpoint on the Manager to trigger package installations. Installed tools will appear instantly and immutably in the AI container's executable path.
+* **Objective:** Give the unprivileged `ai-container` the ability to install any development library or AI tooling (Python, Node.js, openvpn, etc.) required for its tasks without allowing privilege escalation or expanding the base Docker image footprint from the compose file.
+* **Design:** Implement an asynchronous **Service-Provider Pattern** over an internal network bridge. The Manager container will host a Nix package repository on a persistent volume. The AI container will query an internal, isolated API endpoint on the Manager to trigger package installations. Installed tools will appear instantly and immutably in the AI container's executable path.
+* [Any suggestions and feedback for implementing this is highly appriciated]
 
 ### Phase 2: High-Volume Userspace Filesystems (SSHFS / FUSE)
 
-* **The Objective:** Graduate from Unison file syncing to a live network-based mounting setup when dealing with massive AI workspaces (e.g., thousands of script variants, dense repository indexing, or heavy dataset arrays) where file mirroring hits a mirroring/CPU bottleneck.
-* **The Design:** To bypass standard network filesystem (NFS) vulnerabilities—which require dangerous root-level kernel capabilities (`CAP_SYS_ADMIN`) inside Docker Compose—the architecture will migrate to **Filesystem in Userspace (FUSE) over SSHFS/SFTP**. The Manager container will securely serve the active files across an isolated internal backplane network, allowing the unprivileged `devuser` inside the AI container to mount the codebase without ever gaining root clearance over the virtual kernel.
-
-
+* **Objective:** Graduate from Unison file syncing to a live network-based mounting setup when dealing with massive AI workspaces (e.g., thousands of script variants, dense repository indexing, or heavy dataset arrays) where file mirroring hits a mirroring/CPU bottleneck.
+* **Design:** To bypass standard network filesystem (NFS) vulnerabilities—which require root-level kernel capabilities (`CAP_SYS_ADMIN`) inside Docker Compose—the architecture will migrate to **Filesystem in Userspace (FUSE) over SSHFS/SFTP**. The Manager container will securely serve the active files across an isolated internal backplane network, allowing the unprivileged `devuser` inside the AI container to mount the codebase without ever gaining root clearance over the virtual kernel.
+* [Again any suggestions and feedback for implementing this is highly appriciated]
