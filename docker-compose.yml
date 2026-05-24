@@ -21,7 +21,6 @@ services:
 
   # The Middle Manager (The Air-Lock)
   manager-bridge:
-    image: local-manager:latest
     build:
       context: .
       dockerfile: Manager-Dockerfile
