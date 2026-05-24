@@ -24,7 +24,7 @@ services:
     image: local-manager:latest
     build:
       context: .
-      dockerfile: Managr-Dockerfile
+      dockerfile: Manager-Dockerfile
     command: > 
       unison /tool-src /host-dest 
       -repeat 5 
