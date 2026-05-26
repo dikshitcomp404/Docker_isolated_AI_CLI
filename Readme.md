@@ -4,6 +4,22 @@ An isolated, security-first environment designed explicitly to execute AI workfl
 
 ---
 
+## Why This Project
+
+Integrating Large Language Models (LLMs) directly into our local development workflows is incredibly powerful—whether it's building terminal-based AI agents, syncing an model with an Obsidian vault, or letting an agent interact with code editors. However, giving an untrusted AI model full executing privileges over your primary host machine is a massive security risk.
+
+The standard solution many use to this problem is expensive: renting a dedicated VPS or dedicating a physically air-gapped machine (like a separate Mac Mini) purely for AI execution. For many developers, including myself, budgeting for dedicated hardware or recurring cloud bills just isn't feasible.
+
+This project was born out of a desire for a different approach: a lightweight, budget-friendly, multi-container Docker architecture that creates a secure, sandboxed "clean room" for AI tool execution directly on your existing machine.
+
+### What It Aims to Do (Scope & Security Boundaries)
+
+This project is explicitly designed to handle the most common operational hazards of local "vibe coding" and agentic workflows, such as: Preventing Accidental Destruction, limiting Data Sprawl & Leaks, isolating Unprivileged Actions.
+
+### What it is NOT designed to do:
+
+This project is not a holistic, hypervisor-level security resolution. It is not engineered to mitigate sophisticated, malicious container-breakout exploits or direct zero-day attacks against the host operating system kernel. It is a practical boundary designed to absorb the chaos of AI hallucinations and erratic behaviour, giving you a safe playground to build and run local AI tools.
+
 ## Project Vision
 
 The long-term goal of this project is to create a **completely portable and secure AI execution runtime**. 
